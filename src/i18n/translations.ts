@@ -91,6 +91,18 @@ export interface UIStrings {
   deletedToast: string;
   settingsSavedToast: string;
   demoRestoredToast: string;
+  googleBackupTitle: string;
+  googleBackupDesc: string;
+  googleClientIdLabel: string;
+  googleSignInBtn: string;
+  googleSignOutBtn: string;
+  googleBackupNowBtn: string;
+  googleRestoreBtn: string;
+  googleBackingUp: string;
+  googleRestoring: string;
+  googleBackupSuccessToast: string;
+  googleRestoreSuccessToast: string;
+  googleNoBackupToast: string;
 }
 
 const ML_STRINGS: UIStrings = {
@@ -184,6 +196,18 @@ const ML_STRINGS: UIStrings = {
   deletedToast: 'കണക്ക് നീക്കം ചെയ്തു.',
   settingsSavedToast: 'ക്രമീകരണങ്ങൾ സേവ് ചെയ്തു.',
   demoRestoredToast: 'ഡെമോ കണക്കുകൾ പുനഃസ്ഥാപിച്ചു.',
+  googleBackupTitle: 'ഗൂഗിൾ ഡ്രൈവ് ബാക്കപ്പ്',
+  googleBackupDesc: 'നിങ്ങളുടെ ഗൂഗിൾ അക്കൗണ്ടിൽ ലോഗിൻ ചെയ്ത് കണക്കുകൾ സുരക്ഷിതമായി ബാക്കപ്പ് ചെയ്യാം.',
+  googleClientIdLabel: 'Google OAuth Client ID',
+  googleSignInBtn: 'ഗൂഗിൾ അക്കൗണ്ടിൽ ലോഗിൻ ചെയ്യുക',
+  googleSignOutBtn: 'ലോഗൗട്ട്',
+  googleBackupNowBtn: 'ഗൂഗിൾ ഡ്രൈവിലേക്ക് ബാക്കപ്പ് ചെയ്യുക',
+  googleRestoreBtn: 'ബാക്കപ്പ് തിരികെ എടുക്കുക',
+  googleBackingUp: 'ബാക്കപ്പ് ചെയ്യുന്നു...',
+  googleRestoring: 'തിരികെ എടുക്കുന്നു...',
+  googleBackupSuccessToast: 'ഗൂഗിൾ ഡ്രൈവിലേക്ക് ബാക്കപ്പ് സേവ് ചെയ്തു.',
+  googleRestoreSuccessToast: 'ഗൂഗിൾ ഡ്രൈവിൽ നിന്ന് കണക്കുകൾ തിരികെ എടുത്തു.',
+  googleNoBackupToast: 'ഗൂഗിൾ ഡ്രൈവിൽ പഴയ ബാക്കപ്പ് ഒന്നും കണ്ടെത്തിയില്ല.',
 };
 
 const EN_STRINGS: UIStrings = {
@@ -277,6 +301,18 @@ const EN_STRINGS: UIStrings = {
   deletedToast: 'Entry deleted.',
   settingsSavedToast: 'Settings saved.',
   demoRestoredToast: 'Demo data restored.',
+  googleBackupTitle: 'Google Account Backup',
+  googleBackupDesc: 'Sign in with your Google Account to securely back up and restore your ledger in Google Drive.',
+  googleClientIdLabel: 'Google OAuth Client ID',
+  googleSignInBtn: 'Sign in with Google',
+  googleSignOutBtn: 'Sign Out',
+  googleBackupNowBtn: 'Backup to Google Drive',
+  googleRestoreBtn: 'Restore from Google Drive',
+  googleBackingUp: 'Backing up...',
+  googleRestoring: 'Restoring...',
+  googleBackupSuccessToast: 'Backed up to Google Drive.',
+  googleRestoreSuccessToast: 'Ledger restored from Google Drive.',
+  googleNoBackupToast: 'No existing backup found in Google Drive.',
 };
 
 const TA_STRINGS: UIStrings = {

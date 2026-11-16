@@ -1,12 +1,35 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
-import { Eye, EyeOff, Download, RotateCcw, KeyRound, Check } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Download,
+  RotateCcw,
+  KeyRound,
+  Check,
+  CloudUpload,
+  CloudDownload,
+  LogOut,
+  LogIn,
+  AlertCircle,
+} from 'lucide-react';
 import type { UIStrings } from '../i18n/translations';
+import type { GoogleUserProfile } from '../utils/googleDriveBackup';
 
 interface SettingsDialogProps {
   isOpen: boolean;
   strings: UIStrings;
   geminiApiKey: string;
+  googleClientId: string;
+  googleUser: GoogleUserProfile | null;
+  lastCloudBackupAt: string | null;
+  isCloudBusy: boolean;
+  cloudError: string;
   onSaveApiKey: (key: string) => void;
+  onSaveGoogleClientId: (clientId: string) => void;
+  onGoogleSignIn: (clientId: string) => Promise<void>;
+  onGoogleSignOut: () => void;
+  onGoogleBackup: () => Promise<void>;
+  onGoogleRestore: () => Promise<void>;
   onExportData: () => void;
   onResetDemoData: () => void;
   onClose: () => void;
@@ -16,7 +39,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   strings,
   geminiApiKey,
+  googleClientId,
+  googleUser,
+  lastCloudBackupAt,
+  isCloudBusy,
+  cloudError,
   onSaveApiKey,
+  onSaveGoogleClientId,
+  onGoogleSignIn,
+  onGoogleSignOut,
+  onGoogleBackup,
+  onGoogleRestore,
   onExportData,
   onResetDemoData,
   onClose,
@@ -24,11 +57,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const baseId = useId();
   const [keyInput, setKeyInput] = useState(geminiApiKey);
+  const [clientIdInput, setClientIdInput] = useState(googleClientId);
   const [showKey, setShowKey] = useState(false);
 
   useEffect(() => {
     setKeyInput(geminiApiKey);
   }, [geminiApiKey]);
+
+  useEffect(() => {
+    setClientIdInput(googleClientId);
+  }, [googleClientId]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -56,6 +94,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSaveApiKey(keyInput.trim());
+    onSaveGoogleClientId(clientIdInput.trim());
     dialogRef.current?.close('saved');
   };
 
@@ -73,6 +112,113 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           </h2>
           <p className="field-hint">{strings.settingsDesc}</p>
         </header>
+
+        {/* Google Account Cloud Backup Section */}
+        <section className="google-backup-card" aria-labelledby={`${baseId}-gdrive-title`}>
+          <h3 id={`${baseId}-gdrive-title`} className="google-backup-heading">
+            {strings.googleBackupTitle}
+          </h3>
+          <p className="field-hint">{strings.googleBackupDesc}</p>
+
+          {googleUser ? (
+            <div className="google-profile-box">
+              <div className="google-profile-row">
+                {googleUser.picture && (
+                  <img
+                    src={googleUser.picture}
+                    alt={googleUser.name}
+                    className="google-avatar"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                <div className="google-profile-meta">
+                  <strong>{googleUser.name}</strong>
+                  <span>{googleUser.email}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-secondary mini-signout-btn"
+                  onClick={onGoogleSignOut}
+                  disabled={isCloudBusy}
+                >
+                  <LogOut size={15} />
+                  <span>{strings.googleSignOutBtn}</span>
+                </button>
+              </div>
+
+              {lastCloudBackupAt && (
+                <p className="field-hint">
+                  Last backup: {new Date(lastCloudBackupAt).toLocaleString()}
+                </p>
+              )}
+
+              <div className="backup-actions-box">
+                <button
+                  type="button"
+                  className="btn-primary-confirm"
+                  onClick={() => void onGoogleBackup()}
+                  disabled={isCloudBusy}
+                >
+                  <CloudUpload size={17} />
+                  <span>
+                    {isCloudBusy ? strings.googleBackingUp : strings.googleBackupNowBtn}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => void onGoogleRestore()}
+                  disabled={isCloudBusy}
+                >
+                  <CloudDownload size={17} />
+                  <span>
+                    {isCloudBusy ? strings.googleRestoring : strings.googleRestoreBtn}
+                  </span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="google-signin-box">
+              <div className="form-group">
+                <label htmlFor={`${baseId}-gclient`} className="form-label">
+                  {strings.googleClientIdLabel}
+                </label>
+                <input
+                  id={`${baseId}-gclient`}
+                  name="googleClientId"
+                  type="text"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  value={clientIdInput}
+                  onChange={(e) => setClientIdInput(e.target.value)}
+                  placeholder="1234567890-abc.apps.googleusercontent.com"
+                  className="form-input"
+                />
+              </div>
+              <button
+                type="button"
+                className="google-signin-btn"
+                onClick={() => {
+                  onSaveGoogleClientId(clientIdInput.trim());
+                  void onGoogleSignIn(clientIdInput.trim());
+                }}
+                disabled={isCloudBusy}
+              >
+                <LogIn size={17} />
+                <span>{strings.googleSignInBtn}</span>
+              </button>
+            </div>
+          )}
+
+          {cloudError && (
+            <div className="field-error" role="alert">
+              <AlertCircle size={15} />
+              <span>{cloudError}</span>
+            </div>
+          )}
+        </section>
 
         <form className="confirm-form" onSubmit={handleSubmit}>
           <div className="form-group">

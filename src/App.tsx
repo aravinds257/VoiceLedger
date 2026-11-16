@@ -37,6 +37,13 @@ import {
 } from './components/SegregatedLedgerView';
 import { SettingsDialog } from './components/SettingsDialog';
 import { getUIStrings, pickDisplayName } from './i18n/translations';
+import {
+  backupToGoogleDrive,
+  restoreFromGoogleDrive,
+  signInWithGoogle,
+  signOutGoogle,
+  type GoogleUserProfile,
+} from './utils/googleDriveBackup';
 
 const STORAGE_KEYS = {
   PEOPLE: 'mvl_people_v1',
@@ -45,6 +52,9 @@ const STORAGE_KEYS = {
   TRANSACTIONS: 'mvl_transactions_v1',
   GEMINI_KEY: 'mvl_gemini_api_key_v1',
   LANGUAGE: 'mvl_language_v1',
+  GOOGLE_CLIENT_ID: 'mvl_google_client_id_v1',
+  GOOGLE_USER: 'mvl_google_user_v1',
+  LAST_BACKUP_AT: 'mvl_last_backup_at_v1',
 };
 
 function loadFromStorage<T>(key: string, fallback: T): T {
@@ -76,6 +86,24 @@ export const App: React.FC = () => {
   const [geminiApiKey, setGeminiApiKey] = useState<string>(() =>
     localStorage.getItem(STORAGE_KEYS.GEMINI_KEY) || ''
   );
+  const [googleClientId, setGoogleClientId] = useState<string>(
+    () =>
+      localStorage.getItem(STORAGE_KEYS.GOOGLE_CLIENT_ID) ||
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      ''
+  );
+  const [googleUser, setGoogleUser] = useState<GoogleUserProfile | null>(() => {
+    const saved = loadFromStorage<GoogleUserProfile | null>(STORAGE_KEYS.GOOGLE_USER, null);
+    if (saved && saved.expiresAt > Date.now()) {
+      return saved;
+    }
+    return null;
+  });
+  const [lastCloudBackupAt, setLastCloudBackupAt] = useState<string | null>(() =>
+    localStorage.getItem(STORAGE_KEYS.LAST_BACKUP_AT)
+  );
+  const [isCloudBusy, setIsCloudBusy] = useState<boolean>(false);
+  const [cloudError, setCloudError] = useState<string>('');
 
   const [pendingDraft, setPendingDraft] = useState<ExtractedVoiceDraft | null>(null);
   const [isProcessingVoice, setIsProcessingVoice] = useState<boolean>(false);
@@ -374,6 +402,74 @@ export const App: React.FC = () => {
     showToast(strings.demoRestoredToast);
   };
 
+  const handleGoogleSignIn = async (clientIdToUse: string) => {
+    setCloudError('');
+    setIsCloudBusy(true);
+    try {
+      const profile = await signInWithGoogle(clientIdToUse);
+      setGoogleUser(profile);
+      localStorage.setItem(STORAGE_KEYS.GOOGLE_USER, JSON.stringify(profile));
+      showToast(`${profile.name} — Google Account connected`);
+    } catch (err) {
+      setCloudError(err instanceof Error ? err.message : 'Google sign-in failed.');
+    } finally {
+      setIsCloudBusy(false);
+    }
+  };
+
+  const handleGoogleSignOut = () => {
+    signOutGoogle(googleUser?.accessToken);
+    setGoogleUser(null);
+    localStorage.removeItem(STORAGE_KEYS.GOOGLE_USER);
+    setCloudError('');
+  };
+
+  const handleGoogleBackup = async () => {
+    if (!googleUser) return;
+    setCloudError('');
+    setIsCloudBusy(true);
+    try {
+      const res = await backupToGoogleDrive(googleUser.accessToken, {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        people,
+        accounts,
+        groups,
+        transactions,
+      });
+      setLastCloudBackupAt(res.modifiedTime);
+      localStorage.setItem(STORAGE_KEYS.LAST_BACKUP_AT, res.modifiedTime);
+      showToast(strings.googleBackupSuccessToast);
+    } catch (err) {
+      setCloudError(err instanceof Error ? err.message : 'Backup failed.');
+    } finally {
+      setIsCloudBusy(false);
+    }
+  };
+
+  const handleGoogleRestore = async () => {
+    if (!googleUser) return;
+    setCloudError('');
+    setIsCloudBusy(true);
+    try {
+      const payload = await restoreFromGoogleDrive(googleUser.accessToken);
+      if (!payload) {
+        showToast(strings.googleNoBackupToast);
+        return;
+      }
+      if (Array.isArray(payload.people)) setPeople(payload.people as Person[]);
+      if (Array.isArray(payload.accounts)) setAccounts(payload.accounts as Account[]);
+      if (Array.isArray(payload.groups)) setGroups(payload.groups as GroupCategory[]);
+      if (Array.isArray(payload.transactions))
+        setTransactions(payload.transactions as TransactionEntry[]);
+      showToast(strings.googleRestoreSuccessToast);
+    } catch (err) {
+      setCloudError(err instanceof Error ? err.message : 'Restore failed.');
+    } finally {
+      setIsCloudBusy(false);
+    }
+  };
+
   const stats = useMemo(() => {
     const today = getTodayISO(0);
     const todayEntries = transactions.filter((t) => t.date === today);
@@ -425,7 +521,16 @@ export const App: React.FC = () => {
             onClick={() => setIsSettingsOpen(true)}
             aria-label={strings.settings}
           >
-            <Settings size={18} />
+            {googleUser?.picture ? (
+              <img
+                src={googleUser.picture}
+                alt={googleUser.name}
+                className="topbar-google-avatar"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <Settings size={18} />
+            )}
           </button>
         </div>
       </header>
@@ -558,11 +663,24 @@ export const App: React.FC = () => {
         isOpen={isSettingsOpen}
         strings={strings}
         geminiApiKey={geminiApiKey}
+        googleClientId={googleClientId}
+        googleUser={googleUser}
+        lastCloudBackupAt={lastCloudBackupAt}
+        isCloudBusy={isCloudBusy}
+        cloudError={cloudError}
         onSaveApiKey={(key) => {
           setGeminiApiKey(key);
           localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, key);
           showToast(strings.settingsSavedToast);
         }}
+        onSaveGoogleClientId={(id) => {
+          setGoogleClientId(id);
+          localStorage.setItem(STORAGE_KEYS.GOOGLE_CLIENT_ID, id);
+        }}
+        onGoogleSignIn={handleGoogleSignIn}
+        onGoogleSignOut={handleGoogleSignOut}
+        onGoogleBackup={handleGoogleBackup}
+        onGoogleRestore={handleGoogleRestore}
         onExportData={handleExportData}
         onResetDemoData={handleResetDemoData}
         onClose={() => setIsSettingsOpen(false)}
