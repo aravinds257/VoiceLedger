@@ -1,0 +1,325 @@
+import type {
+  Account,
+  GroupCategory,
+  LanguageOption,
+  Person,
+  SampleVoicePhrase,
+  TransactionEntry,
+} from '../types';
+
+export const LANGUAGE_OPTIONS: LanguageOption[] = [
+  {
+    code: 'ml-IN',
+    name: 'Malayalam',
+    nativeName: 'മലയാളം',
+    exampleHint: 'ഉദാ: "രാഹുലിന് എസ്ബിഐ അക്കൗണ്ടിൽ 500 രൂപ വീട് പണി ഗ്രൂപ്പിൽ ചേർക്കുക"',
+  },
+  {
+    code: 'en-IN',
+    name: 'English (India)',
+    nativeName: 'English / Manglish',
+    exampleHint: 'e.g. "Add 500 rupees for Rahul in SBI account under House Work group"',
+  },
+  {
+    code: 'ta-IN',
+    name: 'Tamil',
+    nativeName: 'தமிழ்',
+    exampleHint: 'ഉദാ: "ராகுலுக்கு 500 ரூபாய் ஜிபே கணக்கில் சேர்க்கவும்"',
+  },
+  {
+    code: 'hi-IN',
+    name: 'Hindi',
+    nativeName: 'हिन्दी',
+    exampleHint: 'उदा: "राहुल के नाम एसबीआई खाते में 500 रुपये जोड़ें"',
+  },
+];
+
+export const INITIAL_PEOPLE: Person[] = [
+  {
+    id: 'person-rahul',
+    name: 'Rahul Nair',
+    malayalamName: 'രാഹുൽ നായർ',
+    aliases: ['രാഹുൽ', 'രാഹുലിന്', 'രാഹുലിന്റെ', 'rahul', 'rahul nair', 'rahulinu'],
+    roleOrNote: 'Contractor / സുഹൃത്ത്',
+    avatarColor: '#0f766e',
+  },
+  {
+    id: 'person-suresh',
+    name: 'Suresh Kumar',
+    malayalamName: 'സുരേഷ് കുമാർ',
+    aliases: ['സുരേഷ്', 'സുരേഷിന്', 'സുരേഷിന്റെ', 'suresh', 'suresh kumar', 'sureshinu'],
+    roleOrNote: 'Wholesale Supplier',
+    avatarColor: '#1d4ed8',
+  },
+  {
+    id: 'person-fathima',
+    name: 'Fathima Beevi',
+    malayalamName: 'ഫാത്തിമ ബീവി',
+    aliases: ['ഫാത്തിമ', 'ഫാത്തിമയ്ക്ക്', 'ഫാത്തിമയുടെ', 'fathima', 'fathima beevi'],
+    roleOrNote: 'Chit Member / അയൽവാസി',
+    avatarColor: '#7e22ce',
+  },
+  {
+    id: 'person-joseph',
+    name: 'Joseph Kurian',
+    malayalamName: 'ജോസഫ് കുര്യൻ',
+    aliases: ['ജോസഫ്', 'ജോസഫിന്', 'ജോസഫിന്റെ', 'ജോസ്', 'joseph', 'jose'],
+    roleOrNote: 'Shop Partner',
+    avatarColor: '#b45309',
+  },
+  {
+    id: 'person-ammavan',
+    name: 'Raghavan Ammavan',
+    malayalamName: 'രാഘവൻ അമ്മാവൻ',
+    aliases: ['അമ്മാവൻ', 'അമ്മാവന്', 'രാഘവൻ', 'ammavan', 'raghavan'],
+    roleOrNote: 'Family / കുടുംബം',
+    avatarColor: '#be123c',
+  },
+];
+
+export const INITIAL_ACCOUNTS: Account[] = [
+  {
+    id: 'acc-gpay',
+    name: 'GPay / UPI',
+    malayalamName: 'ജിപേ (GPay / UPI)',
+    aliases: ['ജിപേ', 'ഗൂഗിൾ പേ', 'യുപിഐ', 'gpay', 'google pay', 'upi', 'ഫോൺപേ', 'phonepe'],
+    type: 'upi',
+    color: '#2563eb',
+  },
+  {
+    id: 'acc-sbi',
+    name: 'SBI Bank Account',
+    malayalamName: 'എസ്ബിഐ ബാങ്ക് (SBI)',
+    aliases: ['എസ്ബിഐ', 'എസ് ബി ഐ', 'ബാങ്ക്', 'sbi', 'state bank', 'sbi account'],
+    type: 'bank',
+    color: '#0f766e',
+  },
+  {
+    id: 'acc-cash',
+    name: 'Cash Box',
+    malayalamName: 'ക്യാഷ് (കൈയിലുള്ള പണം)',
+    aliases: ['ക്യാഷ്', 'പണം', 'കൈയിൽ', 'cash', 'cash box', 'petty cash'],
+    type: 'cash',
+    color: '#15803d',
+  },
+  {
+    id: 'acc-federal',
+    name: 'Federal Bank',
+    malayalamName: 'ഫെഡറൽ ബാങ്ക്',
+    aliases: ['ഫെഡറൽ', 'ഫെഡറൽ ബാങ്ക്', 'federal', 'federal bank'],
+    type: 'bank',
+    color: '#b45309',
+  },
+  {
+    id: 'acc-shop',
+    name: 'Shop Khata Ledger',
+    malayalamName: 'കടയിലെ അക്കൗണ്ട് (പറ്റ്)',
+    aliases: ['കട', 'കടയിലെ', 'പറ്റ്', 'shop', 'khata', 'ledger'],
+    type: 'ledger',
+    color: '#7c3aed',
+  },
+];
+
+export const INITIAL_GROUPS: GroupCategory[] = [
+  {
+    id: 'grp-daily',
+    name: 'Daily General',
+    malayalamName: 'ദിവസേനയുള്ള കണക്ക് (പൊതുവായത്)',
+    aliases: ['ദിവസേന', 'പൊതുവായത്', 'സാധാരണ', 'daily', 'general'],
+    isSpecific: false,
+    color: '#475569',
+  },
+  {
+    id: 'grp-house',
+    name: 'House Construction',
+    malayalamName: 'വീട് പണി (House Work)',
+    aliases: ['വീട് പണി', 'വീടുപണി', 'വീട്', 'കൺസ്ട്രക്ഷൻ', 'house', 'house work', 'construction'],
+    isSpecific: true,
+    color: '#0f766e',
+  },
+  {
+    id: 'grp-chit',
+    name: 'Monthly Chit Fund',
+    malayalamName: 'മാസ ചിട്ടി (കുറി)',
+    aliases: ['ചിട്ടി', 'കുറി', 'മാസ ചിട്ടി', 'chit', 'chitty', 'kuri'],
+    isSpecific: true,
+    color: '#7e22ce',
+  },
+  {
+    id: 'grp-onam',
+    name: 'Onam / Festival',
+    malayalamName: 'ഓണം ആഘോഷം',
+    aliases: ['ഓണം', 'ഉത്സവം', 'ആഘോഷം', 'onam', 'festival'],
+    isSpecific: true,
+    color: '#d97706',
+  },
+  {
+    id: 'grp-wedding',
+    name: 'Wedding Expense',
+    malayalamName: 'കല്യാണ ആവശ്യം',
+    aliases: ['കല്യാണം', 'കല്യാണ', 'വിവാഹം', 'wedding', 'marriage'],
+    isSpecific: true,
+    color: '#db2777',
+  },
+];
+
+export const SAMPLE_VOICE_PHRASES: SampleVoicePhrase[] = [
+  {
+    id: 'sample-1',
+    malayalamText: 'രാഹുലിന് എസ്ബിഐ അക്കൗണ്ടിൽ 1500 രൂപ വീട് പണി ഗ്രൂപ്പിൽ കൊടുത്തു',
+    transliteration: 'Rahulinu SBI accountil 1500 roopa veedu pani groupil koduthu',
+    englishMeaning: 'Paid ₹1,500 to Rahul from SBI Account under House Construction group',
+    tag: 'Specific Group + Debit',
+  },
+  {
+    id: 'sample-2',
+    malayalamText: 'ഫാത്തിമയിൽ നിന്ന് ജിപേ വഴി 2000 രൂപ മാസ ചിട്ടി ഇനത്തിൽ കിട്ടി',
+    transliteration: 'Fathimayil ninnu GPay vazhi 2000 roopa maasa chitti inathil kitti',
+    englishMeaning: 'Received ₹2,000 from Fathima in GPay under Monthly Chit group',
+    tag: 'Specific Group + Credit',
+  },
+  {
+    id: 'sample-3',
+    malayalamText: 'സുരേഷിന് ക്യാഷ് അക്കൗണ്ടിൽ 750 രൂപ ചേർക്കുക',
+    transliteration: 'Sureshinu Cash accountil 750 roopa cherkkuka',
+    englishMeaning: 'Add ₹750 for Suresh in Cash Account (Today / Daily General)',
+    tag: 'Per-Day General',
+  },
+  {
+    id: 'sample-4',
+    malayalamText: 'ഇന്നലെ ജോസഫിന് ഫെഡറൽ ബാങ്ക് അക്കൗണ്ടിൽ 3200 രൂപ കല്യാണം ഗ്രൂപ്പിൽ നൽകി',
+    transliteration: 'Innale Josephinu Federal Bank accountil 3200 roopa kalyanam groupil nalki',
+    englishMeaning: 'Yesterday gave ₹3,200 to Joseph in Federal Bank under Wedding group',
+    tag: 'Yesterday + Specific Group',
+  },
+  {
+    id: 'sample-5',
+    malayalamText: 'അനിലിന് ജിപേ അക്കൗണ്ടിൽ അഞ്ഞൂറ് രൂപ ഓണം ഗ്രൂപ്പിൽ ചേർക്കുക',
+    transliteration: 'Anilinu GPay accountil anjooru roopa Onam groupil cherkkuka',
+    englishMeaning: 'Add ₹500 (spoken word) for new person Anil in GPay under Onam group',
+    tag: 'Spoken Malayalam Number + New Person',
+  },
+];
+
+export function getTodayISO(offsetDays = 0): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getInitialTransactions(): TransactionEntry[] {
+  const today = getTodayISO(0);
+  const yesterday = getTodayISO(-1);
+  const twoDaysAgo = getTodayISO(-2);
+
+  return [
+    {
+      id: 'tx-init-1',
+      personId: 'person-rahul',
+      personName: 'Rahul Nair',
+      personMalayalamName: 'രാഹുൽ നായർ',
+      accountId: 'acc-sbi',
+      accountName: 'SBI Bank Account',
+      accountMalayalamName: 'എസ്ബിഐ ബാങ്ക് (SBI)',
+      amount: 2500,
+      type: 'debit',
+      date: today,
+      createdAt: new Date().toISOString(),
+      groupId: 'grp-house',
+      groupName: 'House Construction',
+      groupMalayalamName: 'വീട് പണി (House Work)',
+      isSpecificGroup: true,
+      rawTranscript: 'രാഹുലിന് എസ്ബിഐ അക്കൗണ്ടിൽ 2500 രൂപ വീട് പണി ഗ്രൂപ്പിൽ കൊടുത്തു',
+      notes: 'സിമന്റ് വാങ്ങിയ വകയിൽ (Cement advance)',
+      language: 'ml-IN',
+      extractionSource: 'local-malayalam-nlp',
+    },
+    {
+      id: 'tx-init-2',
+      personId: 'person-fathima',
+      personName: 'Fathima Beevi',
+      personMalayalamName: 'ഫാത്തിമ ബീവി',
+      accountId: 'acc-gpay',
+      accountName: 'GPay / UPI',
+      accountMalayalamName: 'ജിപേ (GPay / UPI)',
+      amount: 2000,
+      type: 'credit',
+      date: today,
+      createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
+      groupId: 'grp-chit',
+      groupName: 'Monthly Chit Fund',
+      groupMalayalamName: 'മാസ ചിട്ടി (കുറി)',
+      isSpecificGroup: true,
+      rawTranscript: 'ഫാത്തിമയിൽ നിന്ന് ജിപേയിൽ 2000 രൂപ മാസ ചിട്ടി കിട്ടി',
+      notes: 'നവംബർ മാസത്തെ ചിട്ടി ഗഡു',
+      language: 'ml-IN',
+      extractionSource: 'local-malayalam-nlp',
+    },
+    {
+      id: 'tx-init-3',
+      personId: 'person-suresh',
+      personName: 'Suresh Kumar',
+      personMalayalamName: 'സുരേഷ് കുമാർ',
+      accountId: 'acc-cash',
+      accountName: 'Cash Box',
+      accountMalayalamName: 'ക്യാഷ് (കൈയിലുള്ള പണം)',
+      amount: 650,
+      type: 'debit',
+      date: today,
+      createdAt: new Date(Date.now() - 7200 * 1000).toISOString(),
+      groupId: 'grp-daily',
+      groupName: 'Daily General',
+      groupMalayalamName: 'ദിവസേനയുള്ള കണക്ക് (പൊതുവായത്)',
+      isSpecificGroup: false,
+      rawTranscript: 'സുരേഷിന് ക്യാഷ് അക്കൗണ്ടിൽ 650 രൂപ കൊടുത്തു',
+      notes: 'ദിവസേനയുള്ള സാധനങ്ങൾ',
+      language: 'ml-IN',
+      extractionSource: 'local-malayalam-nlp',
+    },
+    {
+      id: 'tx-init-4',
+      personId: 'person-joseph',
+      personName: 'Joseph Kurian',
+      personMalayalamName: 'ജോസഫ് കുര്യൻ',
+      accountId: 'acc-shop',
+      accountName: 'Shop Khata Ledger',
+      accountMalayalamName: 'കടയിലെ അക്കൗണ്ട് (പറ്റ്)',
+      amount: 1800,
+      type: 'credit',
+      date: yesterday,
+      createdAt: new Date(Date.now() - 86400 * 1000).toISOString(),
+      groupId: 'grp-daily',
+      groupName: 'Daily General',
+      groupMalayalamName: 'ദിവസേനയുള്ള കണക്ക് (പൊതുവായത്)',
+      isSpecificGroup: false,
+      rawTranscript: 'ഇന്നലെ ജോസഫിൽ നിന്ന് കടയിലെ അക്കൗണ്ടിൽ 1800 രൂപ കിട്ടി',
+      notes: 'ഇന്നലത്തെ കടയിലെ കളക്ഷൻ',
+      language: 'ml-IN',
+      extractionSource: 'local-malayalam-nlp',
+    },
+    {
+      id: 'tx-init-5',
+      personId: 'person-ammavan',
+      personName: 'Raghavan Ammavan',
+      personMalayalamName: 'രാഘവൻ അമ്മാവൻ',
+      accountId: 'acc-federal',
+      accountName: 'Federal Bank',
+      accountMalayalamName: 'ഫെഡറൽ ബാങ്ക്',
+      amount: 5000,
+      type: 'credit',
+      date: twoDaysAgo,
+      createdAt: new Date(Date.now() - 172800 * 1000).toISOString(),
+      groupId: 'grp-house',
+      groupName: 'House Construction',
+      groupMalayalamName: 'വീട് പണി (House Work)',
+      isSpecificGroup: true,
+      rawTranscript: 'അമ്മാവൻ ഫെഡറൽ ബാങ്കിൽ 5000 രൂപ വീട് പണിക്ക് അയച്ചു',
+      notes: 'വീട് പണി സഹായം',
+      language: 'ml-IN',
+      extractionSource: 'local-malayalam-nlp',
+    },
+  ];
+}

@@ -1,0 +1,19 @@
+{
+  "name": "ശബ്ദ കണക്ക് (Shabda Kanakku) — Malayalam Voice Ledger",
+  "short_name": "ശബ്ദ കണക്ക്",
+  "description": "Speak in Malayalam to record amounts for specific people and accounts with confirmation, daily segregation, and custom groups.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b132b",
+  "theme_color": "#0f766e",
+  "orientation": "portrait",
+  "lang": "ml-IN",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
